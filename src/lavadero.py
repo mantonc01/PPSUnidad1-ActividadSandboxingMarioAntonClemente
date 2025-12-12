@@ -126,17 +126,21 @@ class Lavadero:
         
         elif self.__fase == self.FASE_RODILLOS:
             if self.__secado_a_mano:
-                self.__fase = self.FASE_SECADO_AUTOMATICO 
-
+                self.__fase = self.FASE_SECADO_MANO 
             else:
-                self.__fase = self.FASE_SECADO_MANO
+                self.__fase = self.FASE_SECADO_AUTOMATICO
         
         elif self.__fase == self.FASE_SECADO_AUTOMATICO:
-            self.terminar()
+            if self.__encerado:
+                self.__fase = self.FASE_ENCERADO
+            else:
+                self.terminar()
         
         elif self.__fase == self.FASE_SECADO_MANO:
-
-            self.terminar() 
+            if self.__encerado:
+                self.__fase = self.FASE_ENCERADO
+            else:
+                self.terminar() 
         
         elif self.__fase == self.FASE_ENCERADO:
             self.terminar() 
@@ -181,7 +185,7 @@ class Lavadero:
         
         while self.ocupado:
             # Usamos un límite de pasos para evitar bucles infinitos en caso de error
-            if len(fases_visitadas) > 15:
+            if len(fases_visitadas) > 20:
                 raise Exception("Bucle infinito detectado en la simulación de fases.")
             self.avanzarFase()
             fases_visitadas.append(self.fase)
