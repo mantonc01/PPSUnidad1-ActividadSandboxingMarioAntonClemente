@@ -129,8 +129,11 @@ class TestLavadero(unittest.TestCase):
     def test_reseteo_estado_con_terminar(self):
         """Test adicional: Verifica que terminar() resetea todas las flags y el estado."""
         self.lavadero._hacer_lavado(True, True, True)
-        
-        self.lavadero._cobrar()
+        self.lavadero.avanzarFase()  # Va a cobrar
+        # self.lavadero._cobrar()
+        # Avanzamos hasta terminar
+        while self.lavadero.ocupado:
+            self.lavadero.avanzarFase()
         self.lavadero.terminar()
         self.assertEqual(self.lavadero.fase, Lavadero.FASE_INACTIVO)
         self.assertFalse(self.lavadero.ocupado)
