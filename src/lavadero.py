@@ -1,5 +1,9 @@
 # lavadero.py
 
+class IllegalStateException(Exception):
+    """Excepción lanzada cuando se intenta realizar una operación en un estado inválido."""
+    pass
+
 class Lavadero:
     """
     Simula el estado y las operaciones de un túnel de lavado de coches.
@@ -68,7 +72,7 @@ class Lavadero:
         :raises ValueError: Si se intenta encerar sin secado a mano (Requisito 2).
         """
         if self.__ocupado:
-            raise RuntimeError("No se puede iniciar un nuevo lavado mientras el lavadero está ocupado")
+            raise IllegalStateException("No se puede iniciar un nuevo lavado mientras el lavadero está ocupado")
         
         if not secado_a_mano and encerado:
             raise ValueError("No se puede encerar el coche sin secado a mano")

@@ -1,8 +1,8 @@
 # tests/test_lavadero_unittest.py
 
 import unittest
-# Importamos la clase Lavadero desde el módulo padre
-from lavadero import Lavadero
+# Importamos la clase Lavadero y la excepción desde el módulo padre
+from lavadero import Lavadero, IllegalStateException
 
 class TestLavadero(unittest.TestCase):
     
@@ -17,13 +17,13 @@ class TestLavadero(unittest.TestCase):
     # ----------------------------------------------------------------------
     def test_reseteo_estado_con_terminar(self):
         """Test : Verifica que terminar() resetea todas las flags y el estado."""
-        self.lavadero._hacer_lavado(True, True, True)
+        self.lavadero.hacerLavado(True, True, True)  # Cambiado de _hacer_lavado a hacerLavado
         self.lavadero._cobrar()
         self.lavadero.terminar()        
         self.assertEqual(self.lavadero.fase, Lavadero.FASE_INACTIVO)
         self.assertFalse(self.lavadero.ocupado)
         self.assertFalse(self.lavadero.prelavado_a_mano)
-        self.assertTrue(self.lavadero.ingresos > 0) # Los ingresos deben mantenerse
+        self.assertGreater(self.lavadero.ingresos, 0) # Los ingresos deben mantenerse
         
     # ----------------------------------------------------------------------
     # TESTS  
@@ -41,9 +41,9 @@ class TestLavadero(unittest.TestCase):
     
     def test2_excepcion_encerado_sin_secado(self):
         """Test 2: Comprueba que encerar sin secado a mano lanza ValueError."""
-        # _hacer_lavado: (Prelavado: False, Secado a mano: False, Encerado: True)
+        # hacerLavado: (Prelavado: False, Secado a mano: False, Encerado: True)
         with self.assertRaises(ValueError):
-            self.lavadero._hacer_lavado(False, False, True)# Debe lanzar ValueError porque no se puede encerar sin secado a mano
+            self.lavadero.hacerLavado(False, False, True)# Debe lanzar ValueError porque no se puede encerar sin secado a mano
 
     
     def test3_excepcion_lavado_ocupado(self):
@@ -58,27 +58,27 @@ class TestLavadero(unittest.TestCase):
     def test4_ingresos_prelavado_mano(self):
         """Test 4: Si seleccionamos un lavado con prelavado a mano, los ingresos son 6,50€."""
         self.lavadero.ejecutar_y_obtener_fases(prelavado=True, secado=False, encerado=False)
-        self.assertEqual(self.lavadero.ingresos, 6.50, places=2)
+        self.assertAlmostEqual(self.lavadero.ingresos, 6.50, places=2)
         
     def test5_ingresos_secado_mano(self):
         """Test 5: Si seleccionamos un lavado con secado a mano, los ingresos son 6,00€."""
         self.lavadero.ejecutar_y_obtener_fases(prelavado=False, secado=True, encerado=False)
-        self.assertEqual(self.lavadero.ingresos, 6.00, places=2)
+        self.assertAlmostEqual(self.lavadero.ingresos, 6.00, places=2)
         
     def test6_ingresos_secado_mano_encerado(self):
         """Test 6: Si seleccionamos un lavado con secado a mano y encerado, los ingresos son 7,20€."""
         self.lavadero.ejecutar_y_obtener_fases(prelavado=False, secado=True, encerado=True)
-        self.assertEqual(self.lavadero.ingresos, 7.20, places=2)
+        self.assertAlmostEqual(self.lavadero.ingresos, 7.20, places=2)
         
     def test7_ingresos_prelavado_secado_mano(self):
         """Test 7: Si seleccionamos un lavado con prelavado a mano y secado a mano, los ingresos son 7,50€."""
         self.lavadero.ejecutar_y_obtener_fases(prelavado=True, secado=True, encerado=False)
-        self.assertEqual(self.lavadero.ingresos, 7.50, places=2)
+        self.assertAlmostEqual(self.lavadero.ingresos, 7.50, places=2)
         
     def test8_ingresos_todos_extras(self):
         """Test 8: Si seleccionamos un lavado con prelavado a mano, secado a mano y encerado, los ingresos son 8,70€."""
         self.lavadero.ejecutar_y_obtener_fases(prelavado=True, secado=True, encerado=True)
-        self.assertEqual(self.lavadero.ingresos, 8.70, places=2)
+        self.assertAlmostEqual(self.lavadero.ingresos, 8.70, places=2)
 
     # ----------------------------------------------------------------------
     # Tests de flujo de fases
@@ -126,9 +126,9 @@ class TestLavadero(unittest.TestCase):
         fases_obtenidas = self.lavadero.ejecutar_y_obtener_fases(prelavado=True, secado=True, encerado=True)
         self.assertEqual(fases_esperadas, fases_obtenidas)
     
-    def test_reseteo_estado_con_terminar(self):
+    def test15_reseteo_estado_con_terminar(self):
         """Test adicional: Verifica que terminar() resetea todas las flags y el estado."""
-        self.lavadero._hacer_lavado(True, True, True)
+        self.lavadero.hacerLavado(True, True, True)
         self.lavadero.avanzarFase()  # Va a cobrar
         # self.lavadero._cobrar()
         # Avanzamos hasta terminar
